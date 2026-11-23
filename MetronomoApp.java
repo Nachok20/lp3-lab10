@@ -6,13 +6,19 @@ import javax.swing.*;
 
 public class MetronomoApp {
     private static class Compas {
-        int tempo = 96;
-        int pulsos = 4;
+        private int tempo = 96;
+        private int pulsos = 4;
+
+        public int getTempo() { return tempo; }
+        public void setTempo(int tempo) { this.tempo = tempo; }
+
+        public int getPulsos() { return pulsos; }
+        public void setPulsos(int pulsos) { this.pulsos = pulsos; }
     }
 
     private final Compas modelo = new Compas();
     private final JFrame ventana = new JFrame("Sebastian | Metrónomo");
-    private final JTextField tempo = new JTextField("96", 3);
+    private final JTextField tempo = new JTextField(String.valueOf(modelo.getTempo()), 3);
     private final JComboBox<Integer> pulsos =
             new JComboBox<>(new Integer[] {2, 3, 4, 6});
     private final JLabel estado = new JLabel("Listo", SwingConstants.CENTER);
@@ -31,8 +37,8 @@ public class MetronomoApp {
             pluma.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                    RenderingHints.VALUE_ANTIALIAS_ON);
             int cx = getWidth() / 2;
-            for (int i = 0; i < modelo.pulsos; i++) {
-                int x = cx + (2 * i - modelo.pulsos + 1) * 17;
+            for (int i = 0; i < modelo.getPulsos(); i++) {
+                int x = cx + (2 * i - modelo.getPulsos() + 1) * 17;
                 pluma.setColor(i == actual ? new Color(22, 127, 127)
                                            : new Color(205, 216, 220));
                 pluma.fillOval(x - 8, 17, 16, 16);
@@ -50,13 +56,13 @@ public class MetronomoApp {
     }
 
     private void marcar() {
-        actual = (actual + 1) % modelo.pulsos;
+        actual = (actual + 1) % modelo.getPulsos();
         derecha = !derecha;
         clic.stop();
         clic.setFramePosition(0);
         clic.start();
-        estado.setText(modelo.tempo + " ppm  |  Pulso " + (actual + 1)
-                       + " de " + modelo.pulsos);
+        estado.setText(modelo.getTempo() + " ppm | Pulso " + (actual + 1)
+                       + " de " + modelo.getPulsos());
         panel.repaint();
     }
 
@@ -66,12 +72,14 @@ public class MetronomoApp {
             if (valor < 40 || valor > 240) {
                 throw new NumberFormatException();
             }
-            modelo.tempo = valor;
-            modelo.pulsos = (Integer) pulsos.getSelectedItem();
-            reloj.setDelay((int) Math.round(60000.0 / valor));
+            int cantidad = (Integer) pulsos.getSelectedItem();
+            modelo.setTempo(valor);
+            modelo.setPulsos(cantidad);
+            reloj.setDelay((int) Math.round(60000.0 / modelo.getTempo()));
             actual = -1;
             panel.repaint();
-            String ajuste = valor + " ppm, " + modelo.pulsos + " pulsos";
+            String ajuste = modelo.getTempo() + " ppm, "
+                    + modelo.getPulsos() + " pulsos";
             estado.setText(ajuste);
             System.out.println("Compás actualizado: " + ajuste);
         } catch (NumberFormatException ex) {
@@ -102,8 +110,8 @@ public class MetronomoApp {
             reloj.setInitialDelay(reloj.getDelay());
             reloj.start();
             inicio.setText("Detener");
-            System.out.println("Metrónomo en marcha: " + modelo.tempo
-                               + " ppm, " + modelo.pulsos + " pulsos.");
+            System.out.println("Metrónomo en marcha: " + modelo.getTempo()
+                               + " ppm, " + modelo.getPulsos() + " pulsos.");
         } catch (Exception ex) {
             if (clic != null) {
                 clic.close();
@@ -116,7 +124,7 @@ public class MetronomoApp {
 
     private void abrir() {
         JPanel controles = new JPanel();
-        pulsos.setSelectedItem(modelo.pulsos);
+        pulsos.setSelectedItem(modelo.getPulsos());
         JButton aplicar = new JButton("Aplicar");
         aplicar.addActionListener(e -> aplicar());
         inicio.addActionListener(e -> alternar());

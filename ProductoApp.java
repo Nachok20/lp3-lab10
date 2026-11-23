@@ -8,18 +8,19 @@ public class ProductoApp {
         private BigDecimal precio;
         private int cantidadStock;
 
-        void setDatos(String nombre, BigDecimal precio, int cantidadStock,
-                      String categoria) {
-            this.nombre = nombre;
-            this.precio = precio;
+        public String getNombre() { return nombre; }
+        public void setNombre(String nombre) { this.nombre = nombre; }
+
+        public BigDecimal getPrecio() { return precio; }
+        public void setPrecio(BigDecimal precio) { this.precio = precio; }
+
+        public int getCantidadStock() { return cantidadStock; }
+        public void setCantidadStock(int cantidadStock) {
             this.cantidadStock = cantidadStock;
-            this.categoria = categoria;
         }
 
-        String getResumen() {
-            return String.format("%s | S/ %s | Stock: %d | %s",
-                    nombre, precio.toPlainString(), cantidadStock, categoria);
-        }
+        public String getCategoria() { return categoria; }
+        public void setCategoria(String categoria) { this.categoria = categoria; }
     }
 
     private static void abrir() {
@@ -52,9 +53,15 @@ public class ProductoApp {
                 int unidades = Integer.parseInt(stock.getText().strip());
                 if (n.isEmpty() || c.isEmpty() || unidades < 0)
                     throw new IllegalArgumentException();
-                producto.setDatos(n, p, unidades, c);
-                resumen.setText(producto.getResumen());
-                System.out.println("Producto actualizado: " + producto.getResumen());
+                producto.setNombre(n);
+                producto.setPrecio(p);
+                producto.setCantidadStock(unidades);
+                producto.setCategoria(c);
+                String detalle = String.format("%s | S/ %s | Stock: %d | %s",
+                        producto.getNombre(), producto.getPrecio().toPlainString(),
+                        producto.getCantidadStock(), producto.getCategoria());
+                resumen.setText(detalle);
+                System.out.println("Producto actualizado: " + detalle);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(ventana,
                         "Complete los textos. Ingrese un precio con hasta dos\n"
